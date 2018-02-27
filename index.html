@@ -14,14 +14,19 @@
 
 
   <ul>
-    <li>{{test}}</li>
-    <li ng-click ="btnClick()">CLICK HERE</li>
-    <li ng-click ="consoleLog()">console.log</li>
+    <li ng-click ="btnClick()">Select Brewery</li>
+    <li ng-click ="secondFire()">Lock in more data</li>
+
+    <li ng-click ="consoleLog()">Let's See It!</li>
   </ul>
+
 
 
 <input type="text" placeholder ="click here">
   <diV id="map"></diV>
+  <ul ng-repeat ="beerName in beerNames track by $index">
+    <li>{{beerName}}</li>
+  </ul>
   
   <!--build:js js/main.min.js -->
 

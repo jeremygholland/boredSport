@@ -5,13 +5,26 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 	var lat = [];
 	var lng = [];
 	var map;
+	$scope.searchId ='';
 	var userSearch;
+	$scope.beerNames = [];
+
+	function sortBeerNames(){
+		var beerNames = $scope.beerNames;
+		var sortedBeerNames = beerNames.slice().sort();
+		for (var k =0; k<sortedBeerNames.length - 1; k++){
+			if (sortedBeerNames[k+1]== sortedBeerNames[k]) {
+				$scope.beerNames.push(sortedBeerNames[k]);
+			}
+		}
+		console.log($scope.beerNames);
+	}
 
       function initMap() {
       	var brewOne = {lat: lat[0], lng:lng[0]}
         map = new google.maps.Map(document.getElementById('map'), {
           center: brewOne,
-          zoom: 17
+          zoom: 15
         });
   var marker = new google.maps.Marker({
     position: brewOne,
@@ -35,6 +48,7 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 						if(json.data[i].brewery.name == userSearch){
 							lng.push(json.data[i].longitude);
 							lat.push(json.data[i].latitude);
+							$scope.searchId = json.data[i].brewery.id
 							console.log(json.data[i].brewery)
 						}
 					}
@@ -43,12 +57,28 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 		}
 
 	$scope.consoleLog = function(){
-		console.log(lng[0]);
-		console.log(lat[0]);
+					initMap();
+		sortBeerNames();
 
-			initMap();
+		console.log($scope.beerNames);
 }	
 
+$scope.secondFire= function(){
+	var id = $scope.searchId;
+	beerNames = $scope.beerNames;
+	$.ajax 
+	({
+		type: "GET",
+		url: "https://api.brewerydb.com/v2/brewery/"+id+"/beers?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json",
+		dataType: "json",
+		success: function(json){
+			for(j=0; j<json.data.length; j++){
+				beerNames.push(json.data[j].name);
+			}
+
+		}
+	})
+}
 
 
 }])
