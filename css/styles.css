@@ -11,3 +11,15 @@ html, body {
 
 #map2 {
   height: 40%; }
+
+a {
+  font-size: 25px;
+  padding: 15px;
+  width: 400px;
+  display: block;
+  background-color: red;
+  color: white; }
+
+div {
+  display: block;
+  padding: 10px 15px; }
