@@ -16,13 +16,14 @@
   <ul>
     <li ng-click ="btnClick()">Select Brewery</li>
     <li ng-click ="secondFire()">Lock in more data</li>
-
+  <li ng-click="stylesSearch()">list styles</li>
     <li ng-click ="consoleLog()">Let's See It!</li>
   </ul>
 
 
 
-<input type="text" placeholder ="click here">
+<input type="text" placeholder ="click here" class ="name">
+<input type="text" class ="styles" placeholder ="styles">
   <diV id="map"></diV>
   <ul ng-repeat ="beerName in beerNames track by $index">
     <li>{{beerName}}</li>
@@ -37,6 +38,7 @@
     <script src="js/lib/jquery-ui.js"></script>
   <script src="js/lib/angular.js"></script>
     <script src="js/breweries.js"></script>
+    <script src="js/styles.js"></script>
   <script src ="js/app.js"></script>
 
   <script src="js/main.js"></script>

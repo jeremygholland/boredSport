@@ -8,6 +8,7 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 	$scope.searchId ='';
 	var userSearch;
 	$scope.beerNames = [];
+	$scope.beerStyles =[];
 
 	function sortBeerNames(){
 		var beerNames = $scope.beerNames;
@@ -59,6 +60,8 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 	$scope.consoleLog = function(){
 					initMap();
 		sortBeerNames();
+		var myJsonString = JSON.stringify($scope.beerStyles);
+		console.log(myJsonString)
 
 		console.log($scope.beerNames);
 }	
@@ -79,6 +82,18 @@ $scope.secondFire= function(){
 		}
 	})
 }
-
+$scope.listStyles = function(){
+	styles = $scope.styles;
+	$.ajax
+	({
+		type: "GET",
+		url: "https://api.brewerydb.com/v2/styles?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json",
+		dataType: "json",
+		success: function(json){
+			for(i= 0; i<json.data.length; i++)
+			$scope.beerStyles.push(json.data[i].name);
+	}
+})
+}
 
 }])
