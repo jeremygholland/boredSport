@@ -76,18 +76,22 @@ $scope.secondFire= function(){
 		dataType: "json",
 		success: function(json){
 			for(j=0; j<json.data.length; j++){
-				beerNames.push(json.data[j].name);
+				var beerInfoObject = {
+					name: json.data[j].name,
+					styleId: json.data[j].styleId
+				}
+				beerNames.push(beerInfoObject);
 			}
 
 		}
 	})
 }
-$scope.listStyles = function(){
+$scope.stylesSearch = function(){
 	styles = $scope.styles;
 	$.ajax
 	({
 		type: "GET",
-		url: "https://api.brewerydb.com/v2/styles?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json",
+		url: "https://api.brewerydb.com/v2/style/75?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json",
 		dataType: "json",
 		success: function(json){
 			for(i= 0; i<json.data.length; i++)
