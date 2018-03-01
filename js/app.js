@@ -42,7 +42,7 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 				type: "GET",
 				url: 'https://api.brewerydb.com/v2/search/geo/point?lat=30.2672&lng=-97.7431&radius=30&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
 				dataType: 'json',
-				success: function(json){
+				success: function(json, status, jqXHR){
 
 					for (i =0; i<json.data.length; i ++){
 						nameArr.push(json.data[i].brewery.name);
@@ -53,10 +53,9 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 							console.log(json.data[i].brewery);
 							$.ajax({
 								type: "GET",
-								url: 'https://api.brewerydb.com/v2/search/geo/point?lat='+lat[0]+'&lng='+lng[0]+'&radius=1&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
+								url: 'https://api.brewerydb.com/v2/search/geo/point?lat='+lat[0]+'&lng='+lng[0]+'&radius=3&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
 								dataType: 'json',
 				success: function(json, status, jqXHR){
-					alert("Local success callback.");
 										for (j =0; j<json.data.length; j++){
 						if(json.data[j].brewery.name != userSearch){
 											console.log(json.data[j].brewery.name)
@@ -71,6 +70,9 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 							})
 						}
 					}
+				},
+				error: function(jqXHR, status, err){
+					alert("local error callback")
 				}
 			})
 		}
