@@ -50,7 +50,20 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 							lng.push(json.data[i].longitude);
 							lat.push(json.data[i].latitude);
 							$scope.searchId = json.data[i].brewery.id
-							console.log(json.data[i].brewery)
+							console.log(json.data[i].brewery);
+							$.ajax({
+								type: "GET",
+								url: 'https://api.brewerydb.com/v2/search/geo/point?lat='+lat[0]+'&lng='+lng[0]+'&radius=1&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
+								dataType: 'json',
+				success: function(json){
+					for (j =0; j<json.data.length; j++){
+						if(json.data[j].brewery.name != userSearch){
+											console.log(json.data[j].brewery.name)
+											}
+
+					}
+				}
+							})
 						}
 					}
 				}
