@@ -26,7 +26,31 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 
 		console.log($scope.beerNames);
 }
+
+
+function geoCode(){
+	$.ajax
+	({
+		type: "GET",
+		url: "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat[0]+","+lng[0]+"&key=AIzaSyBECdr1cotQ82zUZ0BLfU3uZz4hubcnBHE",
+		dataType: "json",
+		success: function(json, status, jqXHR){
+			for (m = 0; m<json.results.length; m++){
+				if(json.results[m].types[0] == "street_address"){
+					console.log (json.results[m].formatted_address);
+				}
+			}
+		},
+		error: function(jqXHR, status, err){
+					alert("local error callback")
+				}
+	})
+
+}
+
+
       function initMap() {
+
     var brewTwo = $scope.secondBreweries;
   	$scope.brewOne = new google.maps.LatLng(lat[0],lng[0]);
     $scope.optionTwo = new google.maps.LatLng(brewTwo[1].lat, brewTwo[1].lng)
@@ -49,6 +73,8 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
           if (status == 'OK') {
             // Display the route on the map.
             directionsDisplay.setDirections(response);
+            directionsDisplay.setPanel(document.getElementById('directionsPanel'));
+
           }
         });
 }
@@ -70,6 +96,7 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 							lat.push(json.data[i].latitude);
 							$scope.searchId = json.data[i].brewery.id
 							console.log(json.data[i].brewery);
+							
 							$.ajax({
 								type: "GET",
 								url: 'https://api.brewerydb.com/v2/search/geo/point?lat='+lat[0]+'&lng='+lng[0]+'&radius=3&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
@@ -94,6 +121,8 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 				}
 
 							})
+
+
 						}
 					}
 				},
@@ -104,6 +133,7 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 		}
 
 	$scope.consoleLog = function(){
+		geoCode();
 					initMap();
 	//	sortBeerNames();
 		var myJsonString = JSON.stringify($scope.beerStyles);
@@ -132,6 +162,10 @@ $scope.secondFire= function(){
 		}
 	})
 }
+
+
+/*
+search function to grab all
 $scope.stylesSearch = function(){
 	styles = $scope.styles;
 	$.ajax
@@ -145,5 +179,5 @@ $scope.stylesSearch = function(){
 	}
 })
 }
-
+*/
 }])
