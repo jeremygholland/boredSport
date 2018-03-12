@@ -83,7 +83,7 @@ function geoCode(){
           map: map
         });
   var start = firstBrewery.address;
-  var end = secondBrewery[1].address;
+  var end = secondBrewery[getRandomInt(secondBrewery.length)].address;
   console.log(end);
   console.log(start);
 
@@ -97,10 +97,15 @@ function geoCode(){
           if (status == 'OK') {
             // Display the route on the map.
             directionsDisplay.setDirections(response);
+            console.log(response.routes[0].legs[0].distance);
             directionsDisplay.setPanel(document.getElementById('directionsPanel'));
 
           }
         });
+}
+
+function getRandomInt(max){
+	return Math.floor(Math.random() * Math.floor(max))
 }
 
 
@@ -136,9 +141,11 @@ function geoCode(){
 											var secondBreweryInfo= {
 												lat: json.data[i].latitude,
 												lng: json.data[i].longitude,
+												id: json.data[i].brewery.id,
 												name: json.data[i].brewery.name,
 												address:json.data[i].streetAddress
 											}
+											$scope.currentSearch = json.data[i].brewery.id
 											$scope.secondBreweries.push(secondBreweryInfo);
 
 
