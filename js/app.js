@@ -12,7 +12,26 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 	$scope.beerStyles =[];
 	$scope.secondBreweries= [];
 	$scope.firstBrewery;
+	$scope.currentSearch; 
 
+function gatherBeers(){
+	id = $scope.currentSearch;
+	console.log(id);
+	$.ajax({
+		type: "GET",
+				url: 'https://api.brewerydb.com/v2/brewery/'+id+'/beers?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
+				dataType: 'json',
+				success: function(json, status, jqXHR){
+					for (j =0; j<json.data.length; j++){
+						$scope.firstBrewery.beers.push(json.data[j].name);
+					}
+					console.log($scope.firstBrewery);
+				},
+				error: function(jqXHR, status, err){
+					alert("local error callback")
+				}
+	})
+}
 
 	function sortBeerNames(){
 		var beerNames = $scope.beerNames;
@@ -52,9 +71,10 @@ function geoCode(){
 
       function initMap() {
 
-    var brewTwo = $scope.secondBreweries;
-  	$scope.brewOne = new google.maps.LatLng($scope.firstBrewery.lat,$scope.firstBrewery.lng);
-    $scope.optionTwo = new google.maps.LatLng(brewTwo[1].lat, brewTwo[1].lng)
+    var secondBrewery = $scope.secondBreweries;
+    var firstBrewery = $scope.firstBrewery;
+  	$scope.brewOne = new google.maps.LatLng(firstBrewery.lat,firstBrewery.lng);
+    $scope.optionTwo = new google.maps.LatLng(secondBrewery[1].lat, secondBrewery[1].lng)
      var mapOptions = {
       		center: $scope.brewOne,
       		 zoom: 15}
@@ -62,8 +82,8 @@ function geoCode(){
   var directionsDisplay = new google.maps.DirectionsRenderer({
           map: map
         });
-  var start = $scope.firstBrewery.address;
-  var end = brewTwo[1].address;
+  var start = firstBrewery.address;
+  var end = secondBrewery[1].address;
   console.log(end);
   console.log(start);
 
@@ -101,27 +121,32 @@ function geoCode(){
 								lng: json.data[i].longitude,
 								lat: json.data[i].latitude,
 								id: json.data[i].brewery.id,
-								address: json.data[i].streetAddress
+								address: json.data[i].streetAddress,
+								beers: []
 							}
-							
+							$scope.currentSearch = json.data[i].brewery.id;
+							gatherBeers();							
 							$.ajax({
 								type: "GET",
 								url: 'https://api.brewerydb.com/v2/search/geo/point?lat='+$scope.firstBrewery.lat+'&lng='+$scope.firstBrewery.lng+'&radius=3&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
 								dataType: 'json',
 				success: function(json, status, jqXHR){
-										for (j =0; j<json.data.length; j++){
-						if(json.data[j].brewery.name != userSearch){
+										for (i =0; i<json.data.length; i++){
+						if(json.data[i].brewery.name != userSearch){
 											var secondBreweryInfo= {
-												lat: json.data[j].latitude,
-												lng: json.data[j].longitude,
-												name: json.data[j].brewery.name,
-												address:json.data[j].streetAddress
+												lat: json.data[i].latitude,
+												lng: json.data[i].longitude,
+												name: json.data[i].brewery.name,
+												address:json.data[i].streetAddress
 											}
 											$scope.secondBreweries.push(secondBreweryInfo);
+
+
 											}
 
 					}
 					console.log($scope.secondBreweries);
+
 				},
 				error: function(jqXHR, status, err){
 					alert("local error callback")
