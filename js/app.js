@@ -13,6 +13,7 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 	$scope.secondBreweries= [];
 	$scope.firstBrewery;
 	$scope.currentSearch; 
+	var distanceArr = []
 
 function gatherBeers(){
 	id = $scope.currentSearch;
@@ -69,6 +70,8 @@ function geoCode(){
 */
 
 
+
+// creates map
       function initMap() {
 
     var secondBrewery = $scope.secondBreweries;
@@ -86,7 +89,7 @@ function geoCode(){
   var end = secondBrewery[getRandomInt(secondBrewery.length)].address;
   console.log(end);
   console.log(start);
-
+//direction portion
   var request = {
           destination: end,
           origin: start,
@@ -104,6 +107,11 @@ function geoCode(){
         });
 }
 
+
+
+
+
+// random number function
 function getRandomInt(max){
 	return Math.floor(Math.random() * Math.floor(max))
 }
@@ -178,25 +186,40 @@ function getRandomInt(max){
 		// var myJsonString = JSON.stringify($scope.beerStyles);
 }	
 
-$scope.secondFire= function(){
-	var id = $scope.firstBrewery.id;
-	beerNames = $scope.beerNames;
-	$.ajax 
-	({
-		type: "GET",
-		url: "https://api.brewerydb.com/v2/brewery/"+id+"/beers?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json",
-		dataType: "json",
-		success: function(json){
-			for(j=0; j<json.data.length; j++){
-				var beerInfoObject = {
-					name: json.data[j].name,
-					styleId: json.data[j].styleId
-				}
-				beerNames.push(beerInfoObject);
-			}
 
-		}
-	})
+// lists all distances
+
+$scope.secondFire= function(){
+	var secondBrewery = $scope.secondBreweries;
+    var firstBrewery = $scope.firstBrewery;
+    var start = firstBrewery.address;
+
+    for (i=0; i<secondBrewery.length; i ++){
+
+
+  var end = secondBrewery[i].address;
+  console.log(end);
+  console.log(start);
+//direction portion
+  var request = {
+          destination: end,
+          origin: start,
+          travelMode: 'DRIVING'
+        };
+        var directionsDisplay = new google.maps.DirectionsRenderer({
+          map: map
+        });
+        var directionsService = new google.maps.DirectionsService();
+        directionsService.route(request, function(response, status) {
+          if (status == 'OK') {
+            // Display the route on the map.
+            directionsDisplay.setDirections(response);
+            distanceArr.push(response.routes[0].legs[0].distance);
+          }
+        });
+        }
+        console.log(distanceArr);
+
 }
 
 
