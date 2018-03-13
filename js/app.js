@@ -158,8 +158,8 @@ function getRandomInt(max){
 												secondBreweryInfo.address = json.data[i].streetAddress
 												}
 												else{
-													// we have async issues
-													
+													// we have async issues https://www.engineyard.com/blog/taming-asynchronous-javascript-with-async
+
 													geoCode(secondBreweryInfo.lat, secondBreweryInfo.lng);
 													secondBreweryInfo.address = $scope.formatted_address;
 												}
