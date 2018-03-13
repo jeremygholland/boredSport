@@ -14,6 +14,7 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 	$scope.firstBrewery;
 	$scope.currentSearch; 
 	var distanceArr = []
+	$scope.formatted_address;
 
 function gatherBeers(){
 	id = $scope.currentSearch;
@@ -47,17 +48,18 @@ function gatherBeers(){
 		console.log($scope.beerNames);
 }
 
-/*
-function geoCode(){
+
+function geoCode(lat, lng){
 	$.ajax
 	({
 		type: "GET",
-		url: "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat[0]+","+lng[0]+"&key=AIzaSyBECdr1cotQ82zUZ0BLfU3uZz4hubcnBHE",
+		url: "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key=AIzaSyBECdr1cotQ82zUZ0BLfU3uZz4hubcnBHE",
 		dataType: "json",
 		success: function(json, status, jqXHR){
 			for (m = 0; m<json.results.length; m++){
 				if(json.results[m].types[0] == "street_address"){
-					console.log (json.results[m].formatted_address);
+					$scope.formatted_address = json.results[m].formatted_address;
+					console.log($scope.formatted_address)
 				}
 			}
 		},
@@ -67,7 +69,6 @@ function geoCode(){
 	})
 
 }
-*/
 
 
 
@@ -151,15 +152,28 @@ function getRandomInt(max){
 												lng: json.data[i].longitude,
 												id: json.data[i].brewery.id,
 												name: json.data[i].brewery.name,
-												address:json.data[i].streetAddress
 											}
+
+												if(typeof json.data[i].streetAddress !== 'undefined'){
+												secondBreweryInfo.address = json.data[i].streetAddress
+												}
+												else{
+													// we have async issues
+													
+													geoCode(secondBreweryInfo.lat, secondBreweryInfo.lng);
+													secondBreweryInfo.address = $scope.formatted_address;
+												}
+
 											$scope.currentSearch = json.data[i].brewery.id
 											$scope.secondBreweries.push(secondBreweryInfo);
+						console.log(secondBreweryInfo)
+
 
 
 											}
 
-					}
+										}
+
 					console.log($scope.secondBreweries);
 
 				},
@@ -189,17 +203,19 @@ function getRandomInt(max){
 
 // lists all distances
 
-$scope.secondFire= function(){
+$scope.secondFire = function(){
 	var secondBrewery = $scope.secondBreweries;
     var firstBrewery = $scope.firstBrewery;
     var start = firstBrewery.address;
 
     for (i=0; i<secondBrewery.length; i ++){
+    	if (typeof secondBrewery[i].address !== 'undefined'){
+	var end = secondBrewery[i].address;
+	}
+	else{
+		var end = new google.maps.LatLng(secondBrewery[i].latLng)
+	}
 
-
-  var end = secondBrewery[i].address;
-  console.log(end);
-  console.log(start);
 //direction portion
   var request = {
           destination: end,
@@ -213,7 +229,6 @@ $scope.secondFire= function(){
         directionsService.route(request, function(response, status) {
           if (status == 'OK') {
             // Display the route on the map.
-            directionsDisplay.setDirections(response);
             distanceArr.push(response.routes[0].legs[0].distance);
           }
         });
