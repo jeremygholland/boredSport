@@ -19,20 +19,16 @@ app.controller('myCtrl', ['$scope', '$http', function ($scope, $http){
 function gatherBeers(){
 	id = $scope.currentSearch;
 	console.log(id);
-	$.ajax({
-		type: "GET",
-				url: 'https://api.brewerydb.com/v2/brewery/'+id+'/beers?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
-				dataType: 'json',
-				success: function(json, status, jqXHR){
-					for (j =0; j<json.data.length; j++){
-						$scope.firstBrewery.beers.push(json.data[j].name);
+	$http({
+		method: "GET",
+				url: 'https://api.brewerydb.com/v2/brewery/'+id+'/beers?key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json'}).then(function successCallback(response){
+						for (j =0; j<response.data.data.length; j++){
+						$scope.firstBrewery.beers.push(response.data.data[j].name);
 					}
 					console.log($scope.firstBrewery);
-				},
-				error: function(jqXHR, status, err){
-					alert("local error callback")
-				}
-	})
+				}, function errorCallback(response){
+					console.log("there was an error")
+				});
 }
 
 	function sortBeerNames(){
@@ -50,23 +46,18 @@ function gatherBeers(){
 
 
 function geoCode(lat, lng){
-	$.ajax
-	({
+	$http({
 		type: "GET",
-		url: "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key=AIzaSyBECdr1cotQ82zUZ0BLfU3uZz4hubcnBHE",
-		dataType: "json",
-		success: function(json, status, jqXHR){
-			for (m = 0; m<json.results.length; m++){
+		url: "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key=AIzaSyBECdr1cotQ82zUZ0BLfU3uZz4hubcnBHE"}).then(function successCallback(response){
+						for (m = 0; m<json.results.length; m++){
 				if(json.results[m].types[0] == "street_address"){
 					$scope.formatted_address = json.results[m].formatted_address;
 					console.log($scope.formatted_address)
 				}
 			}
-		},
-		error: function(jqXHR, status, err){
-					alert("local error callback")
-				}
-	})
+		}, function errorCallback(response){
+			console.log('geoCode error')
+		});
 
 }
 
