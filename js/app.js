@@ -49,9 +49,9 @@ function geoCode(lat, lng){
 	$http({
 		type: "GET",
 		url: "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng+"&key=AIzaSyBECdr1cotQ82zUZ0BLfU3uZz4hubcnBHE"}).then(function successCallback(response){
-						for (m = 0; m<json.results.length; m++){
-				if(json.results[m].types[0] == "street_address"){
-					$scope.formatted_address = json.results[m].formatted_address;
+						for (m = 0; m<response.data.results.length; m++){
+				if(response.data.results[m].types[0] == "street_address"){
+					$scope.formatted_address = response.data.results[m].formatted_address;
 					console.log($scope.formatted_address)
 				}
 			}
@@ -112,41 +112,36 @@ function getRandomInt(max){
 	$scope.btnClick=function(){
 		userSearch = $('input').val()
 		console.log(userSearch);
-		$.ajax
-			({
+		$http({
 				type: "GET",
-				url: 'https://api.brewerydb.com/v2/search/geo/point?lat=30.2672&lng=-97.7431&radius=30&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
-				dataType: 'json',
-				success: function(json, status, jqXHR){
-					for (i =0; i<json.data.length; i ++){
-						nameArr.push(json.data[i].brewery.name);
-						if(json.data[i].brewery.name == userSearch){
+				url: 'https://api.brewerydb.com/v2/search/geo/point?lat=30.2672&lng=-97.7431&radius=30&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json'}).then(function successCallback(response){
+					for (i =0; i<response.data.data.length; i ++){
+						nameArr.push(response.data.data[i].brewery.name);
+						if(response.data.data[i].brewery.name == userSearch){
 
 							$scope.firstBrewery = {
-								lng: json.data[i].longitude,
-								lat: json.data[i].latitude,
-								id: json.data[i].brewery.id,
-								address: json.data[i].streetAddress,
+								lng: response.data.data[i].longitude,
+								lat: response.data.data[i].latitude,
+								id: response.data.data[i].brewery.id,
+								address: response.data.data[i].streetAddress,
 								beers: []
 							}
-							$scope.currentSearch = json.data[i].brewery.id;
+							$scope.currentSearch = response.data.data[i].brewery.id;
 							gatherBeers();							
-							$.ajax({
+							$http({
 								type: "GET",
-								url: 'https://api.brewerydb.com/v2/search/geo/point?lat='+$scope.firstBrewery.lat+'&lng='+$scope.firstBrewery.lng+'&radius=3&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json',
-								dataType: 'json',
-				success: function(json, status, jqXHR){
-										for (i =0; i<json.data.length; i++){
-						if(json.data[i].brewery.name != userSearch){
+								url: 'https://api.brewerydb.com/v2/search/geo/point?lat='+$scope.firstBrewery.lat+'&lng='+$scope.firstBrewery.lng+'&radius=3&units=m&key=4b50655001c2875f2ef1e4cf9dc31c6c&format=json'}).then(function successCallback(response){
+									for (i =0; i<response.data.data.length; i++){
+						if(response.data.data[i].brewery.name != userSearch){
 											var secondBreweryInfo= {
-												lat: json.data[i].latitude,
-												lng: json.data[i].longitude,
-												id: json.data[i].brewery.id,
-												name: json.data[i].brewery.name,
+												lat: response.data.data[i].latitude,
+												lng: response.data.data[i].longitude,
+												id: response.data.data[i].brewery.id,
+												name: response.data.data[i].brewery.name,
 											}
 
-												if(typeof json.data[i].streetAddress !== 'undefined'){
-												secondBreweryInfo.address = json.data[i].streetAddress
+												if(typeof response.data.data[i].streetAddress !== 'undefined'){
+												secondBreweryInfo.address = response.data.data[i].streetAddress
 												}
 												else{
 													// we have async issues https://www.engineyard.com/blog/taming-asynchronous-javascript-with-async
@@ -155,7 +150,7 @@ function getRandomInt(max){
 													secondBreweryInfo.address = $scope.formatted_address;
 												}
 
-											$scope.currentSearch = json.data[i].brewery.id
+											$scope.currentSearch = response.data.data[i].brewery.id
 											$scope.secondBreweries.push(secondBreweryInfo);
 						console.log(secondBreweryInfo)
 
@@ -166,23 +161,17 @@ function getRandomInt(max){
 										}
 
 					console.log($scope.secondBreweries);
-
-				},
-				error: function(jqXHR, status, err){
+								}, function errorCallback(response){
 					alert("local error callback")
+				});
+
+							}
 				}
 
-							})
-
-
-						}
-					}
-				},
-				error: function(jqXHR, status, err){
+				},function errorCallback(response){
 					alert("local error callback")
-				}
-			})
-		}
+				});
+			}
 
 	$scope.consoleLog = function(){
 		initMap();
