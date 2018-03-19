@@ -138,25 +138,30 @@ function getRandomInt(max){
 												lng: response.data.data[i].longitude,
 												id: response.data.data[i].brewery.id,
 												name: response.data.data[i].brewery.name,
+												address: response.data.data[i].streetAddress
 											}
-
-												if(typeof response.data.data[i].streetAddress !== 'undefined'){
-												secondBreweryInfo.address = response.data.data[i].streetAddress
+											$scope.initialSearchAddress = response.data.data[i].streetAddress
+											setTimeout(function(){
+												if(typeof $scope.initialSearchAddress !== 'undefined'){
+													secondBreweryInfo.address = $scope.initialSearchAddress
 												}
 												else{
-													// we have async issues https://www.engineyard.com/blog/taming-asynchronous-javascript-with-async
 
+													// duplicating results at this point, but does work? 
 													geoCode(secondBreweryInfo.lat, secondBreweryInfo.lng);
 													secondBreweryInfo.address = $scope.formatted_address;
-												}
-
-											$scope.currentSearch = response.data.data[i].brewery.id
+													}
 											$scope.secondBreweries.push(secondBreweryInfo);
+											}, 2000)
+
+
+											
 						console.log(secondBreweryInfo)
 
 
 
 											}
+								$scope.currentSearch = response.data.data[i].brewery.id
 
 										}
 
